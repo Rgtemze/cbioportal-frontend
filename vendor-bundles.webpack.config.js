@@ -26,6 +26,7 @@ const config = {
             'd3',
             'datatables.net',
             'webpack-raphael',
+            'pathway-mapper',
         ],
     },
 
