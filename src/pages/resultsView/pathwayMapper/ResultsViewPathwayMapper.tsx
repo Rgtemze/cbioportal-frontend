@@ -6,6 +6,7 @@ import PathwayMapper, { ICBioData } from 'pathway-mapper';
 import 'pathway-mapper/dist/base.css';
 import PathwayMapperTable from './PathwayMapperTable';
 import { observer } from 'mobx-react';
+import { SimpleGetterLazyMobXTableApplicationDataStore } from '../../../shared/lib/ILazyMobXTableApplicationDataStore';
 import autobind from 'autobind-decorator';
 import {
     observable,
@@ -43,9 +44,12 @@ export default class ResultsViewPathwayMapper extends React.Component<
 > {
     private accumulatedAlterationFrequencyDataForNonQueryGenes: ICBioData[];
     private readonly accumulatedValidGenes: { [gene: string]: boolean };
-
     @observable
     private selectedPathway = '';
+
+    @observable
+    private tableData = [{ name: 'Placeholder', genes: [], score: 0 }];
+    private dataStore: any;
 
     @observable
     private newGenesFromPathway: string[];
@@ -70,6 +74,10 @@ export default class ResultsViewPathwayMapper extends React.Component<
         this.activeToasts = [];
         this.accumulatedValidGenes = {};
         this.accumulatedAlterationFrequencyDataForNonQueryGenes = [];
+
+        this.dataStore = new SimpleGetterLazyMobXTableApplicationDataStore(
+            () => this.tableData
+        );
 
         this.toastReaction = reaction(
             () => [props.store.tabId],
@@ -200,7 +208,7 @@ export default class ResultsViewPathwayMapper extends React.Component<
                                 addGenomicDataHandler={
                                     this.addGenomicDataHandler
                                 }
-                                tableComponent={PathwayMapperTable}
+                                tableComponent={this.renderTable}
                                 validGenes={this.validGenes}
                                 toast={toast}
                             />
@@ -209,6 +217,31 @@ export default class ResultsViewPathwayMapper extends React.Component<
                     </Row>
                 </div>
             </div>
+        );
+    }
+
+    @autobind
+    renderTable(
+        data: any,
+        selectedPathway: string,
+        changePathway: Function,
+        pageNo: number
+    ) {
+        let index = _.findIndex(data, function(o) {
+            return o.name == selectedPathway;
+        });
+        this.tableData = data;
+        this.dataStore.page = Math.floor(
+            index / (this.dataStore.itemsPerPage || 10)
+        );
+        console.log('In render table: ', selectedPathway);
+        return (
+            <PathwayMapperTable
+                data={data}
+                selectedPathway={selectedPathway}
+                changePathway={changePathway}
+                dataStore={this.dataStore}
+            />
         );
     }
 

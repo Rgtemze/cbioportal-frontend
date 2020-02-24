@@ -26,6 +26,7 @@ interface IPathwayMapperTableProps {
     data: IPathwayMapperTable[];
     selectedPathway: string;
     changePathway: Function;
+    dataStore: any;
     initialSortColumn?: string;
 }
 
@@ -49,7 +50,6 @@ export default class PathwayMapperTable extends React.Component<
         [columnEnum: number]: PathwayMapperTableColumn;
     };
     @observable selectedPathway: string;
-
     constructor(props: IPathwayMapperTableProps) {
         super(props);
         this._columns = {};
@@ -132,21 +132,17 @@ export default class PathwayMapperTable extends React.Component<
                 );
             },
             tooltip: <span>Genes matched</span>,
-            sortBy: (d: IPathwayMapperTable) => d.genes,
+            sortBy: (d: IPathwayMapperTable) => d.genes.length,
             download: (d: IPathwayMapperTable) => d.genes.toString(),
         };
     }
-
-    private dataStore = new SimpleGetterLazyMobXTableApplicationDataStore(
-        () => this.props.data
-    );
 
     render() {
         const columns = _.sortBy(this._columns);
         return (
             <PathwayMapperTableComponent
                 columns={columns}
-                dataStore={this.dataStore}
+                dataStore={this.props.dataStore}
                 initialItemsPerPage={10}
                 initialSortColumn={this.props.initialSortColumn}
                 paginationProps={{ itemsPerPageOptions: [10] }}

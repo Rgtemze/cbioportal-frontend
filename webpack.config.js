@@ -49,7 +49,7 @@ const isDev = NODE_ENV === 'development';
 const isTest = NODE_ENV === 'test';
 
 // devServer config
-const devHost = process.env.HOST || 'localhost';
+const devHost = '139.179.21.90'; // process.env.HOST || 'localhost';
 const devPort = process.env.PORT || 3000;
 
 const root = resolve(__dirname);
@@ -361,7 +361,7 @@ var config = {
         lazy: false,
         publicPath: '/',
         https: false,
-        host: 'localhost',
+        host: '139.179.21.90',
         headers: { 'Access-Control-Allow-Origin': '*' },
         stats: 'errors-only',
         disableHostCheck: true,
@@ -475,7 +475,7 @@ if (isDev || isTest) {
 
     // force hot module reloader to hit absolute path so it can load
     // from dev server
-    config.output.publicPath = '//localhost:3000/';
+    config.output.publicPath = '//139.179.21.90:3000/';
 } else {
     (config.devtool = sourceMap), (config.output.publicPath = '/');
 
